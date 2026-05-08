@@ -1,0 +1,12 @@
+[2026-05-06 14:23:01] INFO: Application started
+[2026-05-06 14:23:02] INFO: Database connection established
+[2026-05-06 14:23:05] ERROR: Failed to load user configuration
+[2026-05-06 14:23:06] ERROR: Timeout connecting to authentication service
+[2026-05-06 14:23:10] WARN: Retrying connection attempt 1
+[2026-05-06 14:23:15] ERROR: NullPointerException in UserService.authenticate()
+[2026-05-06 14:23:20] ERROR: Connection timeout after 5 attempts
+[2026-05-06 14:23:25] WARN: Falling back to cached credentials
+[2026-05-06 14:23:30] ERROR: Cache expired, exception thrown
+[2026-05-06 14:23:35] INFO: Attempting recovery sequence
+[2026-05-06 14:23:40] ERROR: Failed to recover from error state
+[2026-05-06 14:23:45] EXCEPTION: java.lang.RuntimeException: System in unstable state

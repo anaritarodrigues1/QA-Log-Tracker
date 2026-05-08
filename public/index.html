@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QA Log & Bug Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🐛 QA Log & Bug Tracker</h1>
+      <p>Centralize bugs, logs e métricas</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="bugs">Bugs</button>
+      <button class="tab-btn" data-tab="logs">Logs</button>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard" class="tab-content active">
+      <div class="metrics-row">
+        <div class="metric-card">
+          <h3>Total Bugs</h3>
+          <p class="metric-value" id="total-bugs">0</p>
+        </div>
+        <div class="metric-card">
+          <h3>Total Logs</h3>
+          <p class="metric-value" id="total-logs">0</p>
+        </div>
+        <div class="metric-card">
+          <h3>Bugs Abertos</h3>
+          <p class="metric-value" id="open-bugs">0</p>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-container">
+          <h3>Bugs por Prioridade</h3>
+          <canvas id="priorityChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Bugs por Status</h3>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-container full-width">
+          <h3>Bugs Reportados (Última Semana)</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-container full-width">
+          <h3>Top 5 Erros nos Logs</h3>
+          <canvas id="errorsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUGS TAB -->
+    <div id="bugs" class="tab-content">
+      <div class="form-section">
+        <h2>Reportar Bug</h2>
+        <form id="bug-form">
+          <input type="text" id="bug-title" placeholder="Título do bug *" required>
+          <textarea id="bug-description" placeholder="Descrição (passos para reproduzir, etc.)"></textarea>
+          <select id="bug-priority">
+            <option value="Low">Baixa Prioridade</option>
+            <option value="Medium" selected>Média Prioridade</option>
+            <option value="High">Alta Prioridade</option>
+            <option value="Critical">Crítico</option>
+          </select>
+          <button type="submit" class="btn-primary">Reportar Bug</button>
+        </form>
+      </div>
+
+      <div class="list-section">
+        <h2>Bugs Reportados</h2>
+        <div class="filters">
+          <select id="filter-priority">
+            <option value="">Todas as Prioridades</option>
+            <option value="Low">Baixa</option>
+            <option value="Medium">Média</option>
+            <option value="High">Alta</option>
+            <option value="Critical">Crítico</option>
+          </select>
+          <select id="filter-status">
+            <option value="">Todos os Status</option>
+            <option value="Open">Aberto</option>
+            <option value="In Progress">Em Análise</option>
+            <option value="Resolved">Resolvido</option>
+          </select>
+          <button onclick="loadBugs()" class="btn-secondary">Filtrar</button>
+        </div>
+        <table id="bugs-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Prioridade</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LOGS TAB -->
+    <div id="logs" class="tab-content">
+      <div class="form-section">
+        <h2>Adicionar Log</h2>
+        <div class="log-upload-section">
+          <h3>Opção 1: Upload de Ficheiro</h3>
+          <form id="log-form-file">
+            <input type="file" id="log-file" accept=".log,.txt" required>
+            <button type="submit" class="btn-primary">Upload Log</button>
+          </form>
+        </div>
+
+        <div class="log-upload-section">
+          <h3>Opção 2: Colar Texto de Log</h3>
+          <form id="log-form-text">
+            <textarea id="log-text" placeholder="Cole aqui o conteúdo do log..."></textarea>
+            <button type="submit" class="btn-primary">Analisar Log</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="list-section">
+        <h2>Logs Analisados</h2>
+        <table id="logs-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Erros Detectados</th>
+              <th>Data</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para detalhes de log -->
+  <div id="logModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Detalhes do Log</h2>
+      <div id="log-details"></div>
+    </div>
+  </div>
+
+  <!-- Modal para editar bug -->
+  <div id="bugModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Editar Bug</h2>
+      <form id="edit-bug-form">
+        <input type="hidden" id="edit-bug-id">
+        <select id="edit-bug-status">
+          <option value="Open">Aberto</option>
+          <option value="In Progress">Em Análise</option>
+          <option value="Resolved">Resolvido</option>
+        </select>
+        <select id="edit-bug-priority">
+          <option value="Low">Baixa</option>
+          <option value="Medium">Média</option>
+          <option value="High">Alta</option>
+          <option value="Critical">Crítico</option>
+        </select>
+        <button type="submit" class="btn-primary">Guardar Alterações</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

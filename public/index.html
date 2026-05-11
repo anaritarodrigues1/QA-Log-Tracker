@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="en-EN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
   <div class="container">
     <header>
       <h1>🐛 QA Log & Bug Tracker</h1>
-      <p>Centralize bugs, logs e métricas</p>
+      <p>Centralize bugs, logs and metrics</p>
     </header>
 
     <div class="tabs">
@@ -32,32 +32,32 @@
           <p class="metric-value" id="total-logs">0</p>
         </div>
         <div class="metric-card">
-          <h3>Bugs Abertos</h3>
+          <h3>Open Bugs</h3>
           <p class="metric-value" id="open-bugs">0</p>
         </div>
       </div>
 
       <div class="charts-row">
         <div class="chart-container">
-          <h3>Bugs por Prioridade</h3>
+          <h3>Bugs by Priority</h3>
           <canvas id="priorityChart"></canvas>
         </div>
         <div class="chart-container">
-          <h3>Bugs por Status</h3>
+          <h3>Bugs by Status</h3>
           <canvas id="statusChart"></canvas>
         </div>
       </div>
 
       <div class="charts-row">
         <div class="chart-container full-width">
-          <h3>Bugs Reportados (Última Semana)</h3>
+          <h3>Reported Bugs (Last Week)</h3>
           <canvas id="trendChart"></canvas>
         </div>
       </div>
 
       <div class="charts-row">
         <div class="chart-container full-width">
-          <h3>Top 5 Erros nos Logs</h3>
+          <h3>Top 5 Errors in Logs</h3>
           <canvas id="errorsChart"></canvas>
         </div>
       </div>
@@ -66,47 +66,47 @@
     <!-- BUGS TAB -->
     <div id="bugs" class="tab-content">
       <div class="form-section">
-        <h2>Reportar Bug</h2>
+        <h2>Report Bug</h2>
         <form id="bug-form">
-          <input type="text" id="bug-title" placeholder="Título do bug *" required>
-          <textarea id="bug-description" placeholder="Descrição (passos para reproduzir, etc.)"></textarea>
+          <input type="text" id="bug-title" placeholder="Bug title *" required>
+          <textarea id="bug-description" placeholder="Description (steps to reproduce, etc.)"></textarea>
           <select id="bug-priority">
-            <option value="Low">Baixa Prioridade</option>
-            <option value="Medium" selected>Média Prioridade</option>
-            <option value="High">Alta Prioridade</option>
-            <option value="Critical">Crítico</option>
+            <option value="Low">Low Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="High">High Priority</option>
+            <option value="Critical">Critical</option>
           </select>
-          <button type="submit" class="btn-primary">Reportar Bug</button>
+          <button type="submit" class="btn-primary">Report Bug</button>
         </form>
       </div>
 
       <div class="list-section">
-        <h2>Bugs Reportados</h2>
+        <h2>Reported Bugs</h2>
         <div class="filters">
           <select id="filter-priority">
-            <option value="">Todas as Prioridades</option>
-            <option value="Low">Baixa</option>
-            <option value="Medium">Média</option>
-            <option value="High">Alta</option>
-            <option value="Critical">Crítico</option>
+            <option value="">All Priorities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
           </select>
           <select id="filter-status">
-            <option value="">Todos os Status</option>
-            <option value="Open">Aberto</option>
-            <option value="In Progress">Em Análise</option>
-            <option value="Resolved">Resolvido</option>
+            <option value="">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
           </select>
-          <button onclick="loadBugs()" class="btn-secondary">Filtrar</button>
+          <button onclick="loadBugs()" class="btn-secondary">Filter</button>
         </div>
         <table id="bugs-table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Título</th>
-              <th>Prioridade</th>
+              <th>Title</th>
+              <th>Priority</th>
               <th>Status</th>
-              <th>Data</th>
-              <th>Ação</th>
+              <th>Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -117,9 +117,9 @@
     <!-- LOGS TAB -->
     <div id="logs" class="tab-content">
       <div class="form-section">
-        <h2>Adicionar Log</h2>
+        <h2>Add Log</h2>
         <div class="log-upload-section">
-          <h3>Opção 1: Upload de Ficheiro</h3>
+          <h3>Option 1: Upload File</h3>
           <form id="log-form-file">
             <input type="file" id="log-file" accept=".log,.txt" required>
             <button type="submit" class="btn-primary">Upload Log</button>
@@ -127,24 +127,24 @@
         </div>
 
         <div class="log-upload-section">
-          <h3>Opção 2: Colar Texto de Log</h3>
+          <h3>Option 2: Paste Log Text</h3>
           <form id="log-form-text">
-            <textarea id="log-text" placeholder="Cole aqui o conteúdo do log..."></textarea>
-            <button type="submit" class="btn-primary">Analisar Log</button>
+            <textarea id="log-text" placeholder="Paste the log content here..."></textarea>
+            <button type="submit" class="btn-primary">Analyze Log</button>
           </form>
         </div>
       </div>
 
       <div class="list-section">
-        <h2>Logs Analisados</h2>
+        <h2>Analyzed Logs</h2>
         <table id="logs-table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Nome</th>
-              <th>Erros Detectados</th>
-              <th>Data</th>
-              <th>Ação</th>
+              <th>Name</th>
+              <th>Detected Errors</th>
+              <th>Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -153,34 +153,34 @@
     </div>
   </div>
 
-  <!-- Modal para detalhes de log -->
+  <!-- Modal for log details -->
   <div id="logModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h2>Detalhes do Log</h2>
+      <h2>Log Details</h2>
       <div id="log-details"></div>
     </div>
   </div>
 
-  <!-- Modal para editar bug -->
+  <!-- Modal to edit bug -->
   <div id="bugModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
-      <h2>Editar Bug</h2>
+      <h2>Edit Bug</h2>
       <form id="edit-bug-form">
         <input type="hidden" id="edit-bug-id">
         <select id="edit-bug-status">
-          <option value="Open">Aberto</option>
-          <option value="In Progress">Em Análise</option>
-          <option value="Resolved">Resolvido</option>
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
         </select>
         <select id="edit-bug-priority">
-          <option value="Low">Baixa</option>
-          <option value="Medium">Média</option>
-          <option value="High">Alta</option>
-          <option value="Critical">Crítico</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
         </select>
-        <button type="submit" class="btn-primary">Guardar Alterações</button>
+        <button type="submit" class="btn-primary">Save Changes</button>
       </form>
     </div>
   </div>

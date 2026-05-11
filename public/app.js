@@ -35,13 +35,13 @@ document.getElementById('bug-form').addEventListener('submit', async (e) => {
     
     const data = await response.json();
     if (response.ok) {
-      alert('✅ Bug reportado com sucesso!');
+      alert('✅ Bug reported with success!');
       document.getElementById('bug-form').reset();
       loadBugs();
       loadDashboard();
     }
   } catch (error) {
-    alert('❌ Erro ao reportar bug: ' + error.message);
+    alert('❌ Error reporting bug: ' + error.message);
   }
 });
 
@@ -76,7 +76,7 @@ async function loadBugs() {
       tbody.appendChild(row);
     });
   } catch (error) {
-    console.error('Erro ao carregar bugs:', error);
+    console.error('Error updating bugs:', error);
   }
 }
 
@@ -103,13 +103,13 @@ document.getElementById('edit-bug-form').addEventListener('submit', async (e) =>
     });
     
     if (response.ok) {
-      alert('✅ Bug atualizado!');
+      alert('✅ Bug updated!');
       document.getElementById('bugModal').classList.remove('active');
       loadBugs();
       loadDashboard();
     }
   } catch (error) {
-    alert('❌ Erro ao atualizar bug: ' + error.message);
+    alert('❌ Error updating bug: ' + error.message);
   }
 });
 
@@ -131,13 +131,13 @@ document.getElementById('log-form-file').addEventListener('submit', async (e) =>
     
     const data = await response.json();
     if (response.ok) {
-      alert(`✅ Log analisado! ${data.errorCount} erros encontrados.`);
+      alert(`✅ Log analyzed! ${data.errorCount} errors found.`);
       document.getElementById('log-form-file').reset();
       loadLogs();
       loadDashboard();
     }
   } catch (error) {
-    alert('❌ Erro ao fazer upload: ' + error.message);
+    alert('❌ Error uploading log: ' + error.message);
   }
 });
 
@@ -159,13 +159,13 @@ document.getElementById('log-form-text').addEventListener('submit', async (e) =>
     
     const data = await response.json();
     if (response.ok) {
-      alert(`✅ Log analisado! ${data.errorCount} erros encontrados.`);
+      alert(`✅ Log analyzed! ${data.errorCount} errors found.`);
       document.getElementById('log-form-text').reset();
       loadLogs();
       loadDashboard();
     }
   } catch (error) {
-    alert('❌ Erro ao analisar log: ' + error.message);
+    alert('❌ Error analyzing log: ' + error.message);
   }
 });
 
@@ -189,7 +189,7 @@ async function loadLogs() {
       tbody.appendChild(row);
     });
   } catch (error) {
-    console.error('Erro ao carregar logs:', error);
+    console.error('Error loading logs:', error);
   }
 }
 
@@ -200,9 +200,9 @@ async function viewLogDetails(logId) {
     
     const detailsDiv = document.getElementById('log-details');
     let html = `
-      <p><strong>Ficheiro:</strong> ${log.file_name}</p>
-      <p><strong>Total de Erros:</strong> <span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></p>
-      <p><strong>Data:</strong> ${new Date(log.created_at).toLocaleString('pt-PT')}</p>
+      <p><strong>File:</strong> ${log.file_name}</p>
+      <p><strong>Total Errors:</strong> <span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></p>
+      <p><strong>Date:</strong> ${new Date(log.created_at).toLocaleString('pt-PT')}</p>
     `;
     
     if (log.errorPatterns && log.errorPatterns.length > 0) {
@@ -216,7 +216,7 @@ async function viewLogDetails(logId) {
     detailsDiv.innerHTML = html;
     document.getElementById('logModal').classList.add('active');
   } catch (error) {
-    alert('❌ Erro ao carregar detalhes: ' + error.message);
+    alert('❌ Error loading details: ' + error.message);
   }
 }
 
@@ -320,7 +320,7 @@ async function loadDashboard() {
       data: {
         labels: metrics.topErrors.map(e => e.error.substring(0, 30) + (e.error.length > 30 ? '...' : '')),
         datasets: [{
-          label: 'Ocorrências',
+          label: 'Ocurrences',
           data: metrics.topErrors.map(e => e.count),
           backgroundColor: '#764ba2',
           borderColor: '#667eea',
@@ -340,7 +340,7 @@ async function loadDashboard() {
       }
     });
   } catch (error) {
-    console.error('Erro ao carregar métricas:', error);
+    console.error('Error loading metrics:', error);
   }
 }
 

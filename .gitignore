@@ -37,3 +37,6 @@ Thumbs.db
 
 # Context files
 .context/
+
+# YAML files
+.yml

@@ -21,7 +21,9 @@ app.use(express.static('public'));
 const upload = multer({ dest: 'uploads/' });
 
 // Database setup
-const db = new Database('qa_tracker.db');
+// In tests, DB_PATH is set to ':memory:' via vitest config — keeps the real db untouched.
+// In production (npm start / npm run dev), DB_PATH is not set, so it falls back to the file.
+const db = new Database(process.env.DB_PATH || 'qa_tracker.db');
 
 // Initialize tables
 db.exec(`
@@ -48,8 +50,11 @@ db.exec(`
 
 // 1. POST /api/bugs - Reportar bug
 app.post('/api/bugs', (req, res) => {
-  const { title, description, priority } = req.body;
-  
+  const { title, description } = req.body;
+  // Apply the default here rather than relying on the SQLite DEFAULT clause,
+  // because better-sqlite3 passes undefined as NULL which bypasses column defaults.
+  const priority = req.body.priority || 'Medium';
+
   if (!title) {
     return res.status(400).json({ error: 'Title is required' });
   }
@@ -249,7 +254,15 @@ app.get('/api/metrics', (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 QA Tracker running at http://localhost:${PORT}`);
-});
+// Export app so test files can import it and pass it directly to supertest,
+// without needing a real server running on a port.
+export { app };
+
+// Only start the HTTP server when this file is the main entry point (npm start / npm run dev).
+// When imported by tests, this block is skipped — no port conflict, no stray server.
+const isMain = path.resolve(process.argv[1]) === path.resolve(__filename);
+if (isMain) {
+  app.listen(PORT, () => {
+    console.log(`🚀 QA Tracker running at http://localhost:${PORT}`);
+  });
+}

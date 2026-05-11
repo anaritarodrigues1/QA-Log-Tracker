@@ -70,7 +70,7 @@ async function loadBugs() {
         <td>${bug.title}</td>
         <td><span class="${priorityClass}">${bug.priority}</span></td>
         <td><span class="${statusClass}">${bug.status}</span></td>
-        <td>${new Date(bug.created_at).toLocaleDateString('en-EN')}</td>
+        <td>${new Date(bug.created_at).toLocaleDateString('en-GB')}</td>
         <td><button class="btn-edit" onclick="editBug(${bug.id}, '${bug.status}', '${bug.priority}')">Edit</button></td>
       `;
       tbody.appendChild(row);
@@ -202,7 +202,7 @@ async function viewLogDetails(logId) {
     let html = `
       <p><strong>File:</strong> ${log.file_name}</p>
       <p><strong>Total Errors:</strong> <span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></p>
-      <p><strong>Date:</strong> ${new Date(log.created_at).toLocaleString('en-EN')}</p>
+      <p><strong>Date:</strong> ${new Date(log.created_at).toLocaleString('en-GB')}</p>
     `;
     
     if (log.errorPatterns && log.errorPatterns.length > 0) {

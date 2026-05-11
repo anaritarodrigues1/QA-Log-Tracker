@@ -1,16 +1,16 @@
 # QA Log & Bug Tracker
 
-🐛 **Aplicação web para centralizar bugs, logs e métricas de QA**
+🐛 **Web application to centralize bugs, logs, and QA metrics**
 
-## 📋 Sobre
+## 📋 About
 
-O QA Log & Bug Tracker é uma ferramenta completa para gestão de qualidade de software, permitindo:
-- Reportar e acompanhar bugs
-- Analisar logs automaticamente
-- Visualizar métricas em tempo real
-- Gerenciar prioridades e status
+QA Log & Bug Tracker is a complete software quality management tool that allows you to:
+- Report and track bugs
+- Automatically analyze logs
+- Visualize real-time metrics
+- Manage priorities and statuses
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
 - **Backend:** Node.js + Express
 - **Frontend:** HTML5 + CSS3 + JavaScript (Vanilla)
@@ -18,82 +18,82 @@ O QA Log & Bug Tracker é uma ferramenta completa para gestão de qualidade de s
 - **Charts:** Chart.js
 - **Upload:** Multer
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
-```
+```text
 qa-log-tracker/
-├── server.js              # Servidor Express (API)
-├── package.json           # Dependências e scripts
-├── qa_tracker.db          # Base de dados SQLite
+├── server.js              # Express server (API)
+├── package.json           # Dependencies and scripts
+├── qa_tracker.db          # SQLite database
 ├── public/
-│   ├── index.html         # Interface principal (3 tabs)
-│   ├── app.js             # Lógica do frontend
-│   └── style.css          # Estilos responsivos
-└── uploads/               # Ficheiros temporários
+│   ├── index.html         # Main interface (3 tabs)
+│   ├── app.js             # Frontend logic
+│   └── style.css          # Responsive styles
+└── uploads/               # Temporary files
 ```
 
-## 🛠️ Instalação
+## 🛠️ Installation
 
-1. **Clonar o repositório:**
+1. **Clone the repository:**
    ```bash
-   git clone <url-do-repo>
+   git clone <repository-url>
    cd qa-log-tracker
    ```
 
-2. **Instalar dependências:**
+2. **Install dependencies:**
    ```bash
    npm install
    ```
 
-3. **Iniciar o servidor:**
+3. **Start the server:**
    ```bash
    npm start
-   # ou para desenvolvimento:
+   # or for development:
    npm run dev
    ```
 
-4. **Aceder à aplicação:**
-   - Abrir `http://localhost:3000` no browser
+4. **Access the application:**
+   - Open `http://localhost:3000` in your browser
 
-## 📊 Funcionalidades
+## 📊 Features
 
-### 🐛 Gestão de Bugs
-- Reportar novos bugs com título, descrição e prioridade
-- Filtrar por prioridade (Low/Medium/High/Critical) e status
-- Editar status e prioridade dos bugs
-- Visualizar data de criação
+### 🐛 Bug Management
+- Report new bugs with title, description, and priority
+- Filter by priority (Low/Medium/High/Critical) and status
+- Edit bug status and priority
+- View creation date
 
-### 📝 Análise de Logs
-- Upload de ficheiros de log
-- Paste direto de conteúdo de log
-- Detecção automática de erros (197+ padrões suportados)
-- Análise de padrões de erro com contadores
-- Top 10 erros mais frequentes
+### 📝 Log Analysis
+- Upload log files
+- Direct paste of log content
+- Automatic error detection (197+ supported patterns)
+- Error pattern analysis with counters
+- Top 10 most frequent errors
 
 ### 📈 Dashboard
-- Métricas em tempo real (total bugs, logs, bugs abertos)
-- Gráficos por prioridade e status
-- Bugs reportados na última semana
-- Top 5 erros nos logs
+- Real-time metrics (total bugs, logs, open bugs)
+- Charts by priority and status
+- Bugs reported in the last week
+- Top 5 log errors
 
 ## 🔌 API Endpoints
 
 ### Bugs
-- `POST /api/bugs` - Reportar bug
-- `GET /api/bugs` - Listar bugs (com filtros)
-- `PUT /api/bugs/:id` - Atualizar bug
+- `POST /api/bugs` - Report bug
+- `GET /api/bugs` - List bugs (with filters)
+- `PUT /api/bugs/:id` - Update bug
 
 ### Logs
-- `POST /api/logs` - Upload/paste de log
-- `GET /api/logs` - Listar logs
-- `GET /api/logs/:id` - Detalhes do log
+- `POST /api/logs` - Upload/paste log
+- `GET /api/logs` - List logs
+- `GET /api/logs/:id` - Log details
 
-### Métricas
-- `GET /api/metrics` - Dados para gráficos
+### Metrics
+- `GET /api/metrics` - Chart data
 
-## 🗄️ Base de Dados
+## 🗄️ Database
 
-### Tabela `bugs`
+### `bugs` Table
 ```sql
 CREATE TABLE bugs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,7 +106,7 @@ CREATE TABLE bugs (
 );
 ```
 
-### Tabela `logs`
+### `logs` Table
 ```sql
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -117,14 +117,14 @@ CREATE TABLE logs (
 );
 ```
 
-## 🎯 Padrões de Detecção de Erros
+## 🎯 Error Detection Patterns
 
-O sistema detecta automaticamente erros usando regex:
+The system automatically detects errors using regex:
 ```javascript
 /\b(error|exception|failed|fail|timeout|critical|warn(?:ing)?)\b[\s:]*(.+?)$/i
 ```
 
-**Exemplos suportados:**
+**Supported examples:**
 - `[ERROR] Connection failed`
 - `Exception: NullPointerException`
 - `Failed to load configuration`
@@ -133,51 +133,51 @@ O sistema detecta automaticamente erros usando regex:
 
 ## 📱 Interface
 
-### Tabs Principais
-1. **Dashboard** - Visão geral com métricas e gráficos
-2. **Bugs** - Formulário de reporte e tabela de bugs
-3. **Logs** - Upload/análise de logs
+### Main Tabs
+1. **Dashboard** - Overview with metrics and charts
+2. **Bugs** - Reporting form and bug table
+3. **Logs** - Log upload/analysis
 
-### Design Responsivo
-- Layout adaptável para desktop e mobile
-- Interface intuitiva com cores por prioridade/status
-- Modal dialogs para edição de bugs
+### Responsive Design
+- Adaptive layout for desktop and mobile
+- Intuitive interface with colors by priority/status
+- Modal dialogs for bug editing
 
-## 🔧 Desenvolvimento
+## 🔧 Development
 
-### Scripts Disponíveis
+### Available Scripts
 ```bash
-npm start      # Inicia servidor em produção
-npm run dev    # Inicia com watch mode (--watch)
+npm start      # Starts server in production
+npm run dev    # Starts with watch mode (--watch)
 ```
 
-### Arquitetura
-- **Backend:** API REST simples com Express
-- **Frontend:** Client-side rendering (sem frameworks)
-- **Database:** SQLite para simplicidade (sem servidor externo)
-- **Upload:** Multer para processamento de ficheiros
+### Architecture
+- **Backend:** Simple REST API with Express
+- **Frontend:** Client-side rendering (without frameworks)
+- **Database:** SQLite for simplicity (no external server)
+- **Upload:** Multer for file processing
 
-## 📈 Melhorias Futuras
+## 📈 Future Improvements
 
-- [ ] Autenticação de utilizadores
-- [ ] Export de relatórios (PDF/Excel)
-- [ ] Notificações por email
-- [ ] Integração com ferramentas externas (Jira, Slack)
-- [ ] API para integração com CI/CD
-- [ ] Backup automático da base de dados
+- [ ] User authentication
+- [ ] Report export (PDF/Excel)
+- [ ] Email notifications
+- [ ] Integration with external tools (Jira, Slack)
+- [ ] API integration with CI/CD
+- [ ] Automatic database backup
 
-## 🤝 Contribuição
+## 🤝 Contribution
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
+1. Fork the project
+2. Create a branch for your feature (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está sob a licença MIT. Veja o ficheiro `LICENSE` para mais detalhes.
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
-**Desenvolvido com ❤️ para facilitar o trabalho de QA**
+**Developed with ❤️ to make QA work easier**

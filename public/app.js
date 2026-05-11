@@ -70,8 +70,8 @@ async function loadBugs() {
         <td>${bug.title}</td>
         <td><span class="${priorityClass}">${bug.priority}</span></td>
         <td><span class="${statusClass}">${bug.status}</span></td>
-        <td>${new Date(bug.created_at).toLocaleDateString('pt-PT')}</td>
-        <td><button class="btn-edit" onclick="editBug(${bug.id}, '${bug.status}', '${bug.priority}')">Editar</button></td>
+        <td>${new Date(bug.created_at).toLocaleDateString('en-EN')}</td>
+        <td><button class="btn-edit" onclick="editBug(${bug.id}, '${bug.status}', '${bug.priority}')">Edit</button></td>
       `;
       tbody.appendChild(row);
     });
@@ -184,7 +184,7 @@ async function loadLogs() {
         <td>${log.file_name}</td>
         <td><span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></td>
         <td>${new Date(log.created_at).toLocaleDateString('pt-PT')}</td>
-        <td><button class="btn-edit" onclick="viewLogDetails(${log.id})">Ver Detalhes</button></td>
+        <td><button class="btn-edit" onclick="viewLogDetails(${log.id})">View Details</button></td>
       `;
       tbody.appendChild(row);
     });
@@ -202,11 +202,11 @@ async function viewLogDetails(logId) {
     let html = `
       <p><strong>File:</strong> ${log.file_name}</p>
       <p><strong>Total Errors:</strong> <span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></p>
-      <p><strong>Date:</strong> ${new Date(log.created_at).toLocaleString('pt-PT')}</p>
+      <p><strong>Date:</strong> ${new Date(log.created_at).toLocaleString('en-EN')}</p>
     `;
     
     if (log.errorPatterns && log.errorPatterns.length > 0) {
-      html += '<h4>Padrões de Erro Detectados:</h4><div class="error-list">';
+      html += '<h4>Detected Error Patterns:</h4><div class="error-list">';
       log.errorPatterns.forEach(([pattern, count]) => {
         html += `<p>• <strong>${count}x</strong> - ${pattern}</p>`;
       });
@@ -320,7 +320,7 @@ async function loadDashboard() {
       data: {
         labels: metrics.topErrors.map(e => e.error.substring(0, 30) + (e.error.length > 30 ? '...' : '')),
         datasets: [{
-          label: 'Ocurrences',
+          label: 'Occurrences',
           data: metrics.topErrors.map(e => e.count),
           backgroundColor: '#764ba2',
           borderColor: '#667eea',

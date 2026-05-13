@@ -1,16 +1,69 @@
+// Switch to a tab and optionally pre-apply a status filter (used by metric card clicks)
+function navigateTo(tabName, statusFilter = '') {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  document.getElementById(tabName).classList.add('active');
+  document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+  if (tabName === 'bugs') {
+    // Reset filters first, then apply the requested one
+    document.getElementById('filter-priority').value = '';
+    document.getElementById('filter-status').value = statusFilter;
+    loadBugs();
+  }
+  if (tabName === 'logs') loadLogs();
+  if (tabName === 'dashboard') loadDashboard();
+}
+
+// Global tooltip for bug descriptions — appended to body to escape table's overflow:hidden
+const descTooltip = document.createElement('div');
+descTooltip.id = 'desc-tooltip';
+document.body.appendChild(descTooltip);
+
+document.getElementById('bugs-table').addEventListener('mouseover', (e) => {
+  const cell = e.target.closest('[data-full]');
+  // Hide tooltip when no cell matched or the description is already expanded inline
+  if (!cell || cell.querySelector('.desc-wrapper.expanded')) {
+    descTooltip.style.display = 'none';
+    return;
+  }
+  const fullText = cell.dataset.full;
+  if (!fullText) { descTooltip.style.display = 'none'; return; }
+
+  const rect = cell.getBoundingClientRect();
+  descTooltip.textContent = fullText;
+  descTooltip.style.display = 'block';
+  descTooltip.style.top  = `${rect.bottom + window.scrollY + 8}px`;
+  descTooltip.style.left = `${rect.left + window.scrollX}px`;
+});
+
+document.getElementById('bugs-table').addEventListener('mouseleave', () => {
+  descTooltip.style.display = 'none';
+});
+
+// Toggle inline expansion of a bug description
+function toggleDesc(btn) {
+  const wrapper = btn.closest('.desc-wrapper');
+  const isExpanded = wrapper.classList.toggle('expanded');
+  btn.textContent = isExpanded ? '−' : '+';
+  // Hide the hover tooltip while the description is expanded
+  descTooltip.style.display = 'none';
+}
+
 // Tab Navigation
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const tabName = btn.dataset.tab;
-    
+
     // Remove active class from all tabs and buttons
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    
+
     // Add active class
     document.getElementById(tabName).classList.add('active');
     btn.classList.add('active');
-    
+
     // Load data when switching tabs
     if (tabName === 'bugs') loadBugs();
     if (tabName === 'logs') loadLogs();
@@ -65,13 +118,31 @@ async function loadBugs() {
       const priorityClass = `priority-${bug.priority.toLowerCase()}`;
       const statusClass = `status-${bug.status.toLowerCase().replace(' ', '-')}`;
       
+      // Escape quotes so the data-full attribute stays valid
+      const escapedDesc = (bug.description || '').replace(/"/g, '&quot;');
+      const descHtml = bug.description
+        ? `<div class="desc-wrapper">
+             <span class="desc-text">${bug.description}</span>
+             <button class="btn-expand-desc" onclick="toggleDesc(this)" title="Expand description">+</button>
+           </div>`
+        : '<span class="no-description">—</span>';
+
       row.innerHTML = `
         <td>${bug.id}</td>
         <td>${bug.title}</td>
+        <td class="bug-description" data-full="${escapedDesc}">${descHtml}</td>
         <td><span class="${priorityClass}">${bug.priority}</span></td>
         <td><span class="${statusClass}">${bug.status}</span></td>
         <td>${new Date(bug.created_at).toLocaleDateString('en-GB')}</td>
-        <td><button class="btn-edit" onclick="editBug(${bug.id}, '${bug.status}', '${bug.priority}')">Edit</button></td>
+        <td class="action-cell">
+          <button class="btn-edit"
+              data-id="${bug.id}"
+              data-status="${bug.status}"
+              data-priority="${bug.priority}"
+              data-description="${escapedDesc}"
+              onclick="editBug(this)">Edit</button>
+          <button class="btn-delete" onclick="deleteBug(${bug.id})">Delete</button>
+        </td>
       `;
       tbody.appendChild(row);
     });
@@ -80,26 +151,40 @@ async function loadBugs() {
   }
 }
 
-function editBug(id, status, priority) {
-  const modal = document.getElementById('bugModal');
-  document.getElementById('edit-bug-id').value = id;
-  document.getElementById('edit-bug-status').value = status;
-  document.getElementById('edit-bug-priority').value = priority;
-  modal.classList.add('active');
+async function deleteBug(id) {
+  if (!confirm('Delete this bug? This action cannot be undone.')) return;
+  try {
+    const response = await fetch(`/api/bugs/${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      loadBugs();
+      loadDashboard();
+    }
+  } catch (error) {
+    alert('❌ Error deleting bug: ' + error.message);
+  }
+}
+
+function editBug(btn) {
+  document.getElementById('edit-bug-id').value          = btn.dataset.id;
+  document.getElementById('edit-bug-status').value      = btn.dataset.status;
+  document.getElementById('edit-bug-priority').value    = btn.dataset.priority;
+  document.getElementById('edit-bug-description').value = btn.dataset.description || '';
+  document.getElementById('bugModal').classList.add('active');
 }
 
 document.getElementById('edit-bug-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const id = document.getElementById('edit-bug-id').value;
-  const status = document.getElementById('edit-bug-status').value;
-  const priority = document.getElementById('edit-bug-priority').value;
-  
+  const id          = document.getElementById('edit-bug-id').value;
+  const status      = document.getElementById('edit-bug-status').value;
+  const priority    = document.getElementById('edit-bug-priority').value;
+  const description = document.getElementById('edit-bug-description').value;
+
   try {
     const response = await fetch(`/api/bugs/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status, priority })
+      body: JSON.stringify({ status, priority, description })
     });
     
     if (response.ok) {
@@ -184,12 +269,28 @@ async function loadLogs() {
         <td>${log.file_name}</td>
         <td><span style="color: #d32f2f; font-weight: bold;">${log.error_count}</span></td>
         <td>${new Date(log.created_at).toLocaleDateString('pt-PT')}</td>
-        <td><button class="btn-edit" onclick="viewLogDetails(${log.id})">View Details</button></td>
+        <td class="action-cell">
+          <button class="btn-edit" onclick="viewLogDetails(${log.id})">View Details</button>
+          <button class="btn-delete" onclick="deleteLog(${log.id})">Delete</button>
+        </td>
       `;
       tbody.appendChild(row);
     });
   } catch (error) {
     console.error('Error loading logs:', error);
+  }
+}
+
+async function deleteLog(id) {
+  if (!confirm('Delete this log? This action cannot be undone.')) return;
+  try {
+    const response = await fetch(`/api/logs/${id}`, { method: 'DELETE' });
+    if (response.ok) {
+      loadLogs();
+      loadDashboard();
+    }
+  } catch (error) {
+    alert('❌ Error deleting log: ' + error.message);
   }
 }
 
@@ -281,33 +382,41 @@ async function loadDashboard() {
       }
     });
     
-    // Trend Chart
+    // Trend Chart — always show last 7 days so empty days render as 0
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return d.toISOString().split('T')[0];
+    });
+    const trendMap = Object.fromEntries(metrics.bugsTrend.map(b => [b.date, b.count]));
+    const trendLabels = last7Days.map(date =>
+      new Date(date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+    );
+    const trendData = last7Days.map(date => trendMap[date] || 0);
+
     if (trendChart) trendChart.destroy();
     const trendCtx = document.getElementById('trendChart').getContext('2d');
     trendChart = new Chart(trendCtx, {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels: metrics.bugsTrend.map(b => b.date),
+        labels: trendLabels,
         datasets: [{
-          label: 'Bugs',
-          data: metrics.bugsTrend.map(b => b.count),
-          borderColor: '#667eea',
-          backgroundColor: 'rgba(102, 126, 234, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#667eea',
-          pointBorderColor: 'white',
-          pointBorderWidth: 2
+          label: 'Bugs reported',
+          data: trendData,
+          backgroundColor: 'rgba(99, 102, 241, 0.25)',
+          borderColor: '#6366f1',
+          borderWidth: 2,
+          borderRadius: 6,
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
-          legend: { display: true }
+          legend: { display: false }
         },
         scales: {
-          y: { beginAtZero: true }
+          y: { beginAtZero: true, ticks: { stepSize: 1 } }
         }
       }
     });

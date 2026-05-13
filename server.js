@@ -103,21 +103,34 @@ app.get('/api/bugs', (req, res) => {
 // 3. PUT /api/bugs/:id - Atualizar bug
 app.put('/api/bugs/:id', (req, res) => {
   const { id } = req.params;
-  const { status, priority } = req.body;
+  const { status, priority, description } = req.body;
 
   const stmt = db.prepare(`
-    UPDATE bugs SET status = ?, priority = ? WHERE id = ?
+    UPDATE bugs SET status = ?, priority = ?, description = ? WHERE id = ?
   `);
 
   try {
-    stmt.run(status, priority, id);
+    stmt.run(status, priority, description, id);
     res.json({ message: 'Bug updated successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// 4. POST /api/logs - Upload de log (ficheiro ou texto)
+// 4. DELETE /api/bugs/:id - Remover bug
+app.delete('/api/bugs/:id', (req, res) => {
+  const { id } = req.params;
+  const stmt = db.prepare('DELETE FROM bugs WHERE id = ?');
+  try {
+    const info = stmt.run(id);
+    if (info.changes === 0) return res.status(404).json({ error: 'Bug not found' });
+    res.json({ message: 'Bug deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 5. POST /api/logs - Upload de log (ficheiro ou texto)
 app.post('/api/logs', upload.single('file'), (req, res) => {
   let logContent = '';
   let fileName = 'pasted_log';
@@ -154,6 +167,19 @@ app.post('/api/logs', upload.single('file'), (req, res) => {
       errorCount,
       errorLines: errorLines.slice(0, 10) // Top 10 errors
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 5b. DELETE /api/logs/:id - Remover log
+app.delete('/api/logs/:id', (req, res) => {
+  const { id } = req.params;
+  const stmt = db.prepare('DELETE FROM logs WHERE id = ?');
+  try {
+    const info = stmt.run(id);
+    if (info.changes === 0) return res.status(404).json({ error: 'Log not found' });
+    res.json({ message: 'Log deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -232,10 +258,10 @@ app.get('/api/metrics', (req, res) => {
   allLogs.forEach(log => {
     const lines = log.content.split('\n');
     lines.forEach(line => {
-      const match = line.match(/(Error|Exception):\s*(.+?)(\s|$)/i);
+      const match = line.match(/\b(error|exception|failed|fail|timeout|critical|warn(?:ing)?)\b[\s:]*(.+?)$/i);
       if (match) {
-        const pattern = match[2].trim();
-        errorPatterns[pattern] = (errorPatterns[pattern] || 0) + 1;
+        const pattern = match[2].trim().substring(0, 100);
+        if (pattern) errorPatterns[pattern] = (errorPatterns[pattern] || 0) + 1;
       }
     });
   });

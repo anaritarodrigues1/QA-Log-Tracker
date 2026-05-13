@@ -15,25 +15,37 @@
     </header>
 
     <div class="tabs">
-      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-      <button class="tab-btn" data-tab="bugs">Bugs</button>
-      <button class="tab-btn" data-tab="logs">Logs</button>
+      <button class="tab-btn tab-btn--blue active" data-tab="dashboard">
+        <span class="tab-icon">📊</span>
+        <span class="tab-label">Dashboard</span>
+      </button>
+      <button class="tab-btn tab-btn--purple" data-tab="bugs">
+        <span class="tab-icon">🐛</span>
+        <span class="tab-label">Bugs</span>
+      </button>
+      <button class="tab-btn tab-btn--green" data-tab="logs">
+        <span class="tab-icon">📋</span>
+        <span class="tab-label">Logs</span>
+      </button>
     </div>
 
     <!-- DASHBOARD TAB -->
     <div id="dashboard" class="tab-content active">
       <div class="metrics-row">
-        <div class="metric-card">
-          <h3>Total Bugs</h3>
+        <div class="metric-card metric-card--purple" onclick="navigateTo('bugs')" title="View all bugs">
+          <h3>🐛 Total Bugs</h3>
           <p class="metric-value" id="total-bugs">0</p>
+          <p class="metric-hint">Click to view all bugs →</p>
         </div>
-        <div class="metric-card">
-          <h3>Total Logs</h3>
+        <div class="metric-card metric-card--blue" onclick="navigateTo('logs')" title="View all logs">
+          <h3>📋 Total Logs</h3>
           <p class="metric-value" id="total-logs">0</p>
+          <p class="metric-hint">Click to view all logs →</p>
         </div>
-        <div class="metric-card">
-          <h3>Open Bugs</h3>
+        <div class="metric-card metric-card--yellow" onclick="navigateTo('bugs', 'Open')" title="View open bugs">
+          <h3>⚠️ Open Bugs</h3>
           <p class="metric-value" id="open-bugs">0</p>
+          <p class="metric-hint">Click to view open bugs →</p>
         </div>
       </div>
 
@@ -65,21 +77,6 @@
 
     <!-- BUGS TAB -->
     <div id="bugs" class="tab-content">
-      <div class="form-section">
-        <h2>Report Bug</h2>
-        <form id="bug-form">
-          <input type="text" id="bug-title" placeholder="Bug title *" required>
-          <textarea id="bug-description" placeholder="Description (steps to reproduce, etc.)"></textarea>
-          <select id="bug-priority">
-            <option value="Low">Low Priority</option>
-            <option value="Medium" selected>Medium Priority</option>
-            <option value="High">High Priority</option>
-            <option value="Critical">Critical</option>
-          </select>
-          <button type="submit" class="btn-primary">Report Bug</button>
-        </form>
-      </div>
-
       <div class="list-section">
         <h2>Reported Bugs</h2>
         <div class="filters">
@@ -103,6 +100,7 @@
             <tr>
               <th>ID</th>
               <th>Title</th>
+              <th>Description</th>
               <th>Priority</th>
               <th>Status</th>
               <th>Date</th>
@@ -112,11 +110,42 @@
           <tbody></tbody>
         </table>
       </div>
+
+      <div class="form-section" style="margin-top: 30px;">
+        <h2>Report Bug</h2>
+        <form id="bug-form">
+          <input type="text" id="bug-title" placeholder="Bug title *" required>
+          <textarea id="bug-description" placeholder="Description (steps to reproduce, etc.)"></textarea>
+          <select id="bug-priority">
+            <option value="Low">Low Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="High">High Priority</option>
+            <option value="Critical">Critical</option>
+          </select>
+          <button type="submit" class="btn-primary">Report Bug</button>
+        </form>
+      </div>
     </div>
 
     <!-- LOGS TAB -->
     <div id="logs" class="tab-content">
-      <div class="form-section">
+      <div class="list-section">
+        <h2>Analyzed Logs</h2>
+        <table id="logs-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Detected Errors</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="form-section" style="margin-top: 30px;">
         <h2>Add Log</h2>
         <div class="log-upload-section">
           <h3>Option 1: Upload File</h3>
@@ -133,22 +162,6 @@
             <button type="submit" class="btn-primary">Analyze Log</button>
           </form>
         </div>
-      </div>
-
-      <div class="list-section">
-        <h2>Analyzed Logs</h2>
-        <table id="logs-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Detected Errors</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -180,6 +193,7 @@
           <option value="High">High</option>
           <option value="Critical">Critical</option>
         </select>
+        <textarea id="edit-bug-description" placeholder="Description (optional)"></textarea>
         <button type="submit" class="btn-primary">Save Changes</button>
       </form>
     </div>
